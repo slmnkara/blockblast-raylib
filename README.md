@@ -47,18 +47,18 @@ Deneyimsiz üyelerin iş yükü görsel ve işitsel statik fonksiyonlar ile mant
 
 ### Mukaddes (Dosya I/O)
 
-**Görev 1:** `save.c` modülünü yazmak, skorları .txt veya .dat formatında diske kaydetmek ve okumak.
-**Görev 2:** Ücretsiz ses (audio) dosyalarını projeye dahil edip oyun içi olaylara bağlamak.
+* **Görev 1:** `save.c` modülünü yazmak, skorları .txt veya .dat formatında diske kaydetmek ve okumak.
+* **Görev 2:** Ücretsiz ses (audio) dosyalarını projeye dahil edip oyun içi olaylara bağlamak.
 
 ### Berivan (Görselleştirme)
 
-**Görev 1:** Metinleri, skor tabelasını ve oyun sonu ekranı yazılarını Raylib ile çizdirmek.
-**Görev 2:** Blok dokularını (texture), bekleme tepsisini ve temel arka planı Raylib ile çizdirmek.
+* **Görev 1:** Metinleri, skor tabelasını ve oyun sonu ekranı yazılarını Raylib ile çizdirmek.
+* **Görev 2:** Blok dokularını (texture), bekleme tepsisini ve temel arka planı Raylib ile çizdirmek.
 
 ### Süleyman (Çekirdek Algoritmalar)
 
-**Görev 1:** `shapes.c` içerisinde kullanılacak blok türlerinin statik matris dizilerini tanımlamak.
-**Görev 2:** Alt kısımdaki bekleme tepsisinin (tray) veri mantığını ve yenilenmesini kurgulamak.
-**Görev 3:** Inputları alıp sürükle-bırak mekaniğini grid matrisine matematiksel olarak oturtmak (Snap to grid).
-**Görev 4:** Çarpışma algılama, satır/sütun temizleme ve oyun sonu kontrolü algoritmalarını yazmak.
-**Görev 5:** Pointer veri aktarım ağını kurmak ve malloc/free işlemlerini kontrol ederek bellek sızıntısını engellemek.
+* **Görev 1:** `shapes.c` içerisinde kullanılacak blok türlerinin statik matris dizilerini tanımlamak.
+* **Görev 2:** Alt kısımdaki bekleme tepsisinin (tray) veri mantığını ve yenilenmesini kurgulamak.
+* **Görev 3:** Inputları alıp sürükle-bırak mekaniğini grid matrisine matematiksel olarak oturtmak (Snap to grid).
+* **Görev 4:** Çarpışma algılama, satır/sütun temizleme ve oyun sonu kontrolü algoritmalarını yazmak.
+* **Görev 5:** Pointer veri aktarım ağını kurmak ve malloc/free işlemlerini kontrol ederek bellek sızıntısını engellemek.

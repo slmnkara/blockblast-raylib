@@ -6,27 +6,27 @@ Bu proje, Block Blast oyununun C ve Raylib kütüphanesi kullanılarak geliştir
 
 ## Teknik Kısıtlar ve Mimari
 
-**Veri Yapıları:** Oyun elemanlarının struct yapıları ile tanımlanması.
-**Hafıza Yönetimi:** malloc/free ile dinamik bellek kontrolü.
-**Algoritmalar:** Çok boyutlu diziler, döngüler ve koşullu ifadeler.
-**Pointerlar:** Fonksiyonlar arası veri aktarımı ve bellek manipülasyonu.
-**Dosya Yönetimi (I/O):** Skor tablosunun ve durumun kaydedilmesi.
-**Animasyon:** Sadece ham kod ve Raylib'in yerleşik zamanlayıcısı (GetFrameTime) ile timer mantığı kurulması.
+* **Veri Yapıları:** Oyun elemanlarının struct yapıları ile tanımlanması.
+* **Hafıza Yönetimi:** malloc/free ile dinamik bellek kontrolü.
+* **Algoritmalar:** Çok boyutlu diziler, döngüler ve koşullu ifadeler.
+* **Pointerlar:** Fonksiyonlar arası veri aktarımı ve bellek manipülasyonu.
+* **Dosya Yönetimi (I/O):** Skor tablosunun ve durumun kaydedilmesi.
+* **Animasyon:** Sadece ham kod ve Raylib'in yerleşik zamanlayıcısı (GetFrameTime) ile timer mantığı kurulması.
 
 ## Modüler Ayrıştırma
 
-**main.c:** Ana oyun döngüsü ve durum makinesi (Menü, Oyun, Bitiş).
-**grid.c / grid.h:** Çok boyutlu dizi yönetimi, blok yerleştirme ve temizleme algoritmaları.
-**shapes.c / shapes.h:** Blok yapıları, bellek tahsisi ve rastgele üretim mantığı.
-**input.c / input.h:** Sürükle-bırak kontrolleri ve grid koordinat dönüşümleri.
-**visuals.c / visuals.h:** Raylib texture render işlemleri, UI çizimleri.
-**save.c / save.h:** Yüksek skor File I/O işlemleri.
+* **main.c:** Ana oyun döngüsü ve durum makinesi (Menü, Oyun, Bitiş).
+* **grid.c / grid.h:** Çok boyutlu dizi yönetimi, blok yerleştirme ve temizleme algoritmaları.
+* **shapes.c / shapes.h:** Blok yapıları, bellek tahsisi ve rastgele üretim mantığı.
+* **input.c / input.h:** Sürükle-bırak kontrolleri ve grid koordinat dönüşümleri.
+* **visuals.c / visuals.h:** Raylib texture render işlemleri, UI çizimleri.
+* **save.c / save.h:** Yüksek skor File I/O işlemleri.
 
 ## Mantıksal Akış
 
-**Çarpışma Algılaması:** Sürüklenen matris ile hedef ızgara matrisinin pointer üzerinden çakışma testi.
-**Izgara Temizleme ve Kombo:** Satır/sütun taraması. Puan = Taban x N x Kombo formülü ile skor hesabı. (N: Eşzamanlı temizlenen hat sayısı).
-**Oyun Bitiş:** Mevcut blokların boşluklara sığmama durumunun arka planda simüle edilmesi.
+* **Çarpışma Algılaması:** Sürüklenen matris ile hedef ızgara matrisinin pointer üzerinden çakışma testi.
+* **Izgara Temizleme ve Kombo:** Satır/sütun taraması. Puan = Taban x N x Kombo formülü ile skor hesabı. (N: Eşzamanlı temizlenen hat sayısı).
+* **Oyun Bitiş:** Mevcut blokların boşluklara sığmama durumunun arka planda simüle edilmesi.
 
 ## Teslimat ve Değerlendirme
 

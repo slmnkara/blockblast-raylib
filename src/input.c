@@ -1,9 +1,26 @@
 #include "input.h"
 #include "board.h"
 #include "score.h"
+#include "float_text.h"
+#include "particle.h"
+
+#include <stdio.h>
+#include <string.h>
 
 #define PANEL_PIECE_SCALE 25
 #define DRAG_PIECE_SCALE  CELL_SIZE
+
+// Color palette (must match render.c)
+static const Color INPUT_PIECE_COLORS[] = {
+    {40, 40, 60, 255},             // 0 = empty cell background
+    {255, 87, 87, 255},            // 1 = red
+    {255, 189, 46, 255},           // 2 = yellow
+    {46, 204, 113, 255},           // 3 = green
+    {52, 152, 219, 255},           // 4 = blue
+    {155, 89, 182, 255},           // 5 = purple
+    {255, 147, 51, 255},           // 6 = orange
+    {26, 188, 156, 255},           // 7 = teal
+};
 
 void InputUpdate(GameState *state)
 {
@@ -56,13 +73,53 @@ void InputUpdate(GameState *state)
         if (BoardCanPlace(&state->board, piece, gridRow, gridCol)) {
             BoardPlace(&state->board, piece, gridRow, gridCol);
 
+            // Save cell colors BEFORE clearing (needed for particle colors)
+            int savedColors[GRID_SIZE][GRID_SIZE];
+            memcpy(savedColors, state->board.cells, sizeof(savedColors));
+
             bool clearedCells[GRID_SIZE][GRID_SIZE];
             int linesCleared = BoardClearLines(&state->board, clearedCells);
 
             if (linesCleared > 0) {
                 state->combo++;
-                state->score += ScoreCalculate(linesCleared, state->combo);
+                int points = ScoreCalculate(linesCleared, state->combo);
+                state->score += points;
+
+                // Add clear animation
                 AnimAddCleared(&state->anims, clearedCells);
+
+                // Emit particles from cleared cells
+                for (int r = 0; r < GRID_SIZE; r++) {
+                    for (int c = 0; c < GRID_SIZE; c++) {
+                        if (!clearedCells[r][c]) continue;
+                        float px = GRID_DRAW_X + c * CELL_SIZE + CELL_SIZE / 2.0f;
+                        float py = GRID_DRAW_Y + r * CELL_SIZE + CELL_SIZE / 2.0f;
+                        int colorIdx = savedColors[r][c];
+                        if (colorIdx < 1 || colorIdx > 7) colorIdx = 1;
+                        ParticleEmit(&state->particles, px, py,
+                                     INPUT_PIECE_COLORS[colorIdx], 5);
+                    }
+                }
+
+                // Floating score text
+                char scoreBuf[32];
+                sprintf(scoreBuf, "+%d", points);
+                FloatTextAdd(&state->floatTexts, scoreBuf,
+                             SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f - 40.0f,
+                             36, (Color){255, 255, 100, 255});
+
+                // Best Combo banner (combo >= 3)
+                if (state->combo >= 3) {
+                    state->banner.active = true;
+                    state->banner.timer = BANNER_DURATION;
+                    state->banner.duration = BANNER_DURATION;
+                    if (state->combo >= 5)
+                        sprintf(state->banner.text, "MUHTESEM! x%d", state->combo);
+                    else if (state->combo >= 4)
+                        sprintf(state->banner.text, "SUPER COMBO! x%d", state->combo);
+                    else
+                        sprintf(state->banner.text, "BEST COMBO! x%d", state->combo);
+                }
             } else {
                 state->combo = 0;
             }

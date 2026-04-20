@@ -20,6 +20,8 @@ set(SOURCES
     src/render.c
     src/score.c
     src/anim.c
+    src/float_text.c
+    src/particle.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

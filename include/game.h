@@ -5,6 +5,10 @@
 #include "board.h"
 #include "piece.h"
 #include "anim.h"
+#include "float_text.h"
+#include "particle.h"
+
+#include <math.h>
 
 // Screen dimensions
 #define SCREEN_WIDTH  480
@@ -20,8 +24,18 @@
 typedef enum {
     SCREEN_MENU,
     SCREEN_PLAY,
+    SCREEN_SETTINGS,
     SCREEN_GAMEOVER
 } Screen;
+
+// "BEST COMBO!" banner animation
+#define BANNER_DURATION 1.8f
+typedef struct {
+    bool active;
+    float timer;
+    float duration;
+    char text[32];
+} BannerAnim;
 
 // Central game state — passed by pointer to all modules
 typedef struct {
@@ -38,8 +52,14 @@ typedef struct {
     Vector2 dragPos;      // current drag position (screen coords)
     Vector2 dragOffset;   // offset from piece origin to mouse
 
-    // Animation
+    // Animation & effects
     AnimQueue anims;
+    FloatTextQueue floatTexts;
+    ParticleSystem particles;
+    BannerAnim banner;
+
+    // Settings menu
+    int selectedSetting;
 
     bool gameOver;
 } GameState;

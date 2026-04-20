@@ -2,6 +2,13 @@
 #include "score.h"
 #include <string.h>
 
+// Setting items for the settings screen
+#define SETTING_COUNT 4
+#define SETTING_SFX     0
+#define SETTING_MUSIC   1
+#define SETTING_RESTART 2
+#define SETTING_QUIT    3
+
 void GameInit(GameState *state)
 {
     memset(state, 0, sizeof(GameState));
@@ -13,6 +20,10 @@ void GameInit(GameState *state)
     state->isDragging = false;
     state->gameOver = false;
     state->anims.count = 0;
+    state->floatTexts.count = 0;
+    state->particles.count = 0;
+    state->banner.active = false;
+    state->selectedSetting = 0;
 
     // Slots start empty until play begins
     for (int i = 0; i < 3; i++)
@@ -31,6 +42,9 @@ void GameReset(GameState *state)
     state->isDragging = false;
     state->gameOver = false;
     state->anims.count = 0;
+    state->floatTexts.count = 0;
+    state->particles.count = 0;
+    state->banner.active = false;
 
     GenerateRandomPieces(state->slots, PANEL_Y, SCREEN_WIDTH);
 }
@@ -38,6 +52,18 @@ void GameReset(GameState *state)
 void GameUpdate(GameState *state)
 {
     float dt = GetFrameTime();
+
+    // Always update visual effects (they should animate on all screens)
+    FloatTextUpdate(&state->floatTexts, dt);
+    ParticleUpdate(&state->particles, dt);
+
+    // Banner timer
+    if (state->banner.active) {
+        state->banner.timer -= dt;
+        if (state->banner.timer <= 0.0f) {
+            state->banner.active = false;
+        }
+    }
 
     switch (state->currentScreen) {
         case SCREEN_MENU:
@@ -51,9 +77,53 @@ void GameUpdate(GameState *state)
             // Update animations
             AnimUpdate(&state->anims, dt);
 
+            // Open settings with ESC
+            if (IsKeyPressed(KEY_ESCAPE)) {
+                state->currentScreen = SCREEN_SETTINGS;
+                state->selectedSetting = 0;
+            }
+
             // Check game over transition
             if (state->gameOver) {
                 state->currentScreen = SCREEN_GAMEOVER;
+            }
+            break;
+
+        case SCREEN_SETTINGS:
+            // Navigate settings
+            if (IsKeyPressed(KEY_UP)) {
+                state->selectedSetting--;
+                if (state->selectedSetting < 0)
+                    state->selectedSetting = SETTING_COUNT - 1;
+            }
+            if (IsKeyPressed(KEY_DOWN)) {
+                state->selectedSetting++;
+                if (state->selectedSetting >= SETTING_COUNT)
+                    state->selectedSetting = 0;
+            }
+
+            // Select setting
+            if (IsKeyPressed(KEY_ENTER)) {
+                switch (state->selectedSetting) {
+                    case SETTING_SFX:
+                        // TODO: toggle sfx when sound system is added
+                        break;
+                    case SETTING_MUSIC:
+                        // TODO: toggle music when sound system is added
+                        break;
+                    case SETTING_RESTART:
+                        state->currentScreen = SCREEN_PLAY;
+                        GameReset(state);
+                        break;
+                    case SETTING_QUIT:
+                        state->currentScreen = SCREEN_MENU;
+                        break;
+                }
+            }
+
+            // Back to game with ESC
+            if (IsKeyPressed(KEY_ESCAPE)) {
+                state->currentScreen = SCREEN_PLAY;
             }
             break;
 

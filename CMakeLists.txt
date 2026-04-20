@@ -13,6 +13,13 @@ FetchContent_MakeAvailable(raylib)
 # SOURCE CODES
 set(SOURCES
     src/main.c
+    src/game.c
+    src/board.c
+    src/piece.c
+    src/input.c
+    src/render.c
+    src/score.c
+    src/anim.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

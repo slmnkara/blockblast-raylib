@@ -1,44 +1,38 @@
 #include "raylib.h"
+#include "game.h"
+#include "input.h"
+#include "render.h"
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
+#include <stdio.h>
+
 int main(void)
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    // Ensure data directory exists for highscore file
+    MakeDirectory("data");
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Block Blast");
+    SetTargetFPS(60);
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    GameState state;
+    GameInit(&state);
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
+    while (!WindowShouldClose()) {
+        // Input (only during play screen)
+        if (state.currentScreen == SCREEN_PLAY) {
+            InputUpdate(&state);
+        }
+
         // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
+        GameUpdate(&state);
 
         // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-
-        EndDrawing();
-        //----------------------------------------------------------------------------------
+        RenderFrame(&state);
     }
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+    // Cleanup: free any remaining pieces
+    for (int i = 0; i < 3; i++)
+        PieceFree(&state.slots[i].piece);
 
+    CloseWindow();
     return 0;
 }

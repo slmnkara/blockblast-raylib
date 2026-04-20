@@ -11,6 +11,7 @@ int main(void)
     MakeDirectory("data");
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Block Blast");
+    SetExitKey(0);  // Disable ESC as exit key (we use it for settings menu)
     SetTargetFPS(60);
 
     GameState state;

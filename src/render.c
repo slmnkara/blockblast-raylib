@@ -29,6 +29,17 @@ static const Color PIECE_COLORS[] = {
 // Settings menu constants
 #define SETTING_COUNT 4
 
+// Layout constants matching game.c
+#define MENU_BTN_W      260
+#define MENU_BTN_H      55
+#define MENU_BTN_X      ((SCREEN_WIDTH - MENU_BTN_W) / 2)
+#define MENU_STD_Y      340
+#define MENU_ADV_Y      420
+
+#define GEAR_X       (SCREEN_WIDTH - 50)
+#define GEAR_Y       10
+#define GEAR_SIZE    36
+
 // --- Forward declarations ---
 static void RenderBoard(GameState *state);
 static void RenderPieceSlots(GameState *state);
@@ -36,6 +47,7 @@ static void RenderDraggedPiece(GameState *state);
 static void RenderGhost(GameState *state);
 static void RenderScore(GameState *state);
 static void RenderBanner(GameState *state);
+static void RenderGearIcon(void);
 static void RenderMenu(GameState *state);
 static void RenderSettings(GameState *state);
 static void RenderGameOver(GameState *state);
@@ -58,6 +70,7 @@ void RenderFrame(GameState *state)
             ParticleDraw(&state->particles);
             FloatTextDraw(&state->floatTexts);
             RenderBanner(state);
+            RenderGearIcon();
             break;
         case SCREEN_SETTINGS:
             // Draw the game behind the overlay
@@ -262,23 +275,99 @@ static void RenderBanner(GameState *state)
     DrawText(state->banner.text, x, y, pulseSize, clr);
 }
 
+// ----- Gear icon (settings button, top-right) -----
+static void RenderGearIcon(void)
+{
+    // Draw a simple gear/cog icon using basic shapes
+    int cx = GEAR_X + GEAR_SIZE / 2;
+    int cy = GEAR_Y + GEAR_SIZE / 2;
+    int outerR = GEAR_SIZE / 2 - 2;
+    int innerR = outerR - 7;
+    int holeR  = 5;
+
+    Color gearClr = (Color){180, 180, 200, 200};
+    Vector2 mousePos = GetMousePosition();
+    Rectangle gearRect = { GEAR_X, GEAR_Y, GEAR_SIZE, GEAR_SIZE };
+    if (CheckCollisionPointRec(mousePos, gearRect)) {
+        gearClr = (Color){255, 220, 50, 240}; // highlight on hover
+    }
+
+    // Outer circle
+    DrawCircle(cx, cy, outerR, gearClr);
+
+    // Gear teeth (8 small rectangles around the circle)
+    for (int i = 0; i < 8; i++) {
+        float angle = (float)i * (PI / 4.0f);
+        float tx = cx + cosf(angle) * (outerR - 1);
+        float ty = cy + sinf(angle) * (outerR - 1);
+        DrawRectanglePro(
+            (Rectangle){ tx, ty, 8, 5 },
+            (Vector2){ 4, 2.5f },
+            angle * (180.0f / PI),
+            gearClr
+        );
+    }
+
+    // Inner circle (darker, to create the ring look)
+    DrawCircle(cx, cy, innerR, (Color){30, 30, 48, 255});
+
+    // Center hole
+    DrawCircle(cx, cy, holeR, gearClr);
+    DrawCircle(cx, cy, holeR - 2, (Color){30, 30, 48, 255});
+}
+
 // ----- Menu screen -----
 static void RenderMenu(GameState *state)
 {
+    // Title
     const char *title = "BLOCK BLAST";
     int tw = MeasureText(title, 48);
-    DrawText(title, (SCREEN_WIDTH - tw)/2, 200, 48, WHITE);
+    DrawText(title, (SCREEN_WIDTH - tw)/2, 180, 48, WHITE);
 
-    const char *sub = "Baslamak icin ENTER'a bas";
-    int sw = MeasureText(sub, 20);
-    DrawText(sub, (SCREEN_WIDTH - sw)/2, 400, 20,
-        (Color){150,150,170,255});
-
+    // High score
     char buf[64];
     sprintf(buf, "En Yuksek Skor: %d", state->highScore);
     int hw = MeasureText(buf, 20);
-    DrawText(buf, (SCREEN_WIDTH - hw)/2, 320, 20,
+    DrawText(buf, (SCREEN_WIDTH - hw)/2, 260, 20,
         (Color){100,100,130,255});
+
+    // Mouse position for hover effects
+    Vector2 mouse = GetMousePosition();
+
+    // --- Standard Mode Button ---
+    Rectangle stdBtn = { MENU_BTN_X, MENU_STD_Y, MENU_BTN_W, MENU_BTN_H };
+    bool stdHover = CheckCollisionPointRec(mouse, stdBtn);
+    Color stdBg = stdHover ? (Color){60, 60, 100, 255} : (Color){45, 45, 75, 255};
+    Color stdBorder = stdHover ? (Color){100, 150, 255, 255} : (Color){70, 70, 110, 255};
+
+    // Button background with rounded look
+    DrawRectangleRounded(stdBtn, 0.3f, 8, stdBg);
+    DrawRectangleRoundedLines(stdBtn, 0.3f, 8, stdBorder);
+
+    const char *stdText = "Standart Mod";
+    int stw = MeasureText(stdText, 24);
+    DrawText(stdText, (SCREEN_WIDTH - stw) / 2, MENU_STD_Y + (MENU_BTN_H - 24) / 2, 24,
+        stdHover ? WHITE : (Color){200, 200, 220, 255});
+
+    // --- Adventure Mode Button ---
+    Rectangle advBtn = { MENU_BTN_X, MENU_ADV_Y, MENU_BTN_W, MENU_BTN_H };
+    bool advHover = CheckCollisionPointRec(mouse, advBtn);
+    Color advBg = advHover ? (Color){60, 50, 80, 255} : (Color){40, 35, 60, 255};
+    Color advBorder = advHover ? (Color){180, 100, 255, 255} : (Color){80, 60, 110, 255};
+
+    DrawRectangleRounded(advBtn, 0.3f, 8, advBg);
+    DrawRectangleRoundedLines(advBtn, 0.3f, 8, advBorder);
+
+    const char *advText = "Macera Modu";
+    int atw = MeasureText(advText, 24);
+    DrawText(advText, (SCREEN_WIDTH - atw) / 2, MENU_ADV_Y + (MENU_BTN_H - 24) / 2, 24,
+        advHover ? (Color){220, 200, 255, 255} : (Color){150, 130, 180, 255});
+
+    // "Coming soon" subtitle under adventure button
+    const char *soon = "Cok Yakinda...";
+    int sow = MeasureText(soon, 14);
+    DrawText(soon, (SCREEN_WIDTH - sow) / 2, MENU_ADV_Y + MENU_BTN_H + 8, 14,
+        (Color){120, 100, 150, 200});
 }
 
 // ----- Settings screen (overlay) -----
@@ -329,7 +418,7 @@ static void RenderSettings(GameState *state)
     }
 
     // Footer hint
-    const char *hint = "ESC: Geri Don  |  ENTER: Sec";
+    const char *hint = "ESC: Geri Don  |  Tikla veya ENTER: Sec";
     int hw = MeasureText(hint, 16);
     DrawText(hint, (SCREEN_WIDTH - hw) / 2, 510, 16, (Color){100, 100, 120, 255});
 }

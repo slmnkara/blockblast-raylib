@@ -47,7 +47,7 @@ Deliverables: Source code, project report, a maximum 5-minute demo video, and a 
 | Report & Documentation | 10% |
 | Video Presentation | 5% |
 
-
-Ayarlar buton haline getirilecek
-Ses efekti ve arka plan müziği eklenecek
-Adventure mode eklenecek
+### To-Do List
+- [ ] Adventure mode eklenecek
+- [ ] Toplanan puana göre arka plan renk değişimi
+- [ ] Görsel ve oynanışa bağlı iyileştirmeler
